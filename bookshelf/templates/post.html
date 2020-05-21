@@ -1,0 +1,14 @@
+{% block content %}
+<div class="media">
+  <a href="/books/{{post.id}}">
+    <div class="media-left">
+      <img src="http://placekitten.com/g/128/192">
+    </div>
+    <div class="media-body">
+      <h4>{{post.title}}</h4>
+      <p>{{post.author}}</p>
+    </div>
+  </a>
+</div>
+
+{% endblock %}
