@@ -1,6 +1,6 @@
 # Flask + AWS service toy project
 
-*Disclaimer:* This project was not built from scratch, it started from [GCPtutorial](https://github.com/GoogleCloudPlatform/getting-started-python) It was intended to be deployed in Google Cloud Platform, which I did it as a school project about an year ago. (KAIST EE488G) 
+*Disclaimer:* This project was not built from scratch, it started from [GCPtutorial](https://github.com/GoogleCloudPlatform/getting-started-python). It was intended to be deployed in Google Cloud Platform, which I did it as a school project about an year ago. (KAIST EE488G) 
 
 But I wanted to deploy this project in AWS environment using Elastic Beanstalk, and use the relational database from AWS. Also, I made some upgrades like recommendation or seeding some initial data set. 
 
@@ -32,7 +32,7 @@ This was particularly bugging for me, since the official document of flask defin
 #### Redundant requirements
 
 ```terminal
-\$ eb create
+$ eb create
 ```
 
 kept failing with exit status 1
@@ -43,7 +43,7 @@ kept failing with exit status 1
 
 Health check kept giving me the result: Severe : Target.ResponseCodeMismatch
 
-After digging into [resolution](https://aws.amazon.com/premiumsupport/knowledge-center/elb-fix-failing-health-checks-alb/), I found out that the solution was in the logs. Server response showed that my application was sending HTTP 302 response code when the user enters into the site. 
+After some [googling](https://aws.amazon.com/premiumsupport/knowledge-center/elb-fix-failing-health-checks-alb/), I found out that the solution was in the logs. Server response showed that my application was sending HTTP 302 response code when the user enters into the site. 
 
 So I just added 302 to the success codes in configuration of *target groups*, since it didn't seem problematic to me...
 
