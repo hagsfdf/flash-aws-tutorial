@@ -18,10 +18,19 @@
     {% extends "base.html" %}
     
     {% block content %}
-    <h3>{{action}} movie</h3>
+    <h4>{{action}} movie</h4>
     
     <form method="POST" enctype="multipart/form-data">
     
+
+      <div class="bg-info text-white">
+        <b>Please follow these rules below when pasting IMDB url</b>
+        <ol>1. Start with "http://" or "https://"</ol>
+        <ol>2. The next following part should be "www.imdb.com"</ol>
+        <ol>3. The next following part should be "/title/" + (valid imdb movie id, which starts with "tt")</ol>
+        <p>Sample : https://www.imdb.com/title/tt0000653/</p>
+      </div>
+
       <div class="form-group">
         <label for="imdb_url">IMDB url</label>
         <input type="text" name="imdb" id="imdb" class="form-control"/>
