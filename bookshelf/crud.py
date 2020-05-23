@@ -14,44 +14,27 @@
 
 from bookshelf import get_model
 from flask import Blueprint, redirect, render_template, request, url_for, flash
-from bookshelf.forms import BookSearchForm
-
-
+from bookshelf.forms import BookSearchForm, BookSortingForm
+from bookshelf.upload import crawl_data
 crud = Blueprint('crud', __name__)
 
 # [START list]
-@crud.route("/")
+@crud.route("/", methods=['GET', 'POST'])
 def list():
     token = request.args.get('page_token', None)
     if token:
         token = token.encode('utf-8')
 
+    sort = BookSortingForm(request.form)
+    select_string = sort.data['select']
+    if request.method == 'POST':
+        books, next_page_token = get_model().list(cursor=token,sortKey=select_string)
+        return render_template("list.html", books=books, next_page_token=next_page_token, form=sort)
     books, next_page_token = get_model().list(cursor=token)
+    return render_template("list.html", books=books, next_page_token=next_page_token, form=sort)
 
-    return render_template(
-        "list.html",
-        books=books,
-        next_page_token=next_page_token)
 # [END list]
 
-# Helper function
-import re
-def clean_text(text):
-    text = text.lower()
-    text = re.sub(r"what's", "what is ", text)
-    text = re.sub(r"\'s", " ", text)
-    text = re.sub(r"\'ve", " have ", text)
-    text = re.sub(r"can't", "can not ", text)
-    text = re.sub(r"n't", " not ", text)
-    text = re.sub(r"i'm", "i am ", text)
-    text = re.sub(r"\'re", " are ", text)
-    text = re.sub(r"\'d", " would ", text)
-    text = re.sub(r"\'ll", " will ", text)
-    text = re.sub(r"\'scuse", " excuse ", text)
-    #text = re.sub('\W', ' ', text)
-    #text = re.sub('\s+', ' ', text)
-    text = text.strip(' ')
-    return text
 
 @crud.route('/init')
 def init():
@@ -61,7 +44,22 @@ def init():
     # for index, row in movies.iterrows():
     #    data = {'title':row['Title'], 'author':row['Director'], 'publishedDate':row['Release Year'], 'description':row['PlotClean']}
     #     get_model().create(data)
+    
+    
     return redirect(url_for('.list'))
+
+    '''
+    deprecated section
+    '''
+    # # Prevents multiple initialization
+    # get_model().delete_all()
+    
+    # f = open('a.txt','r')
+    # for x in f:
+    #     data = crawl_data(x)
+    #     get_model().create(data)
+    # f.close()
+    # return redirect(url_for('.list'))
 
 
 @crud.route('/<id>')
@@ -69,20 +67,32 @@ def view(id):
     book = get_model().read(id)
     return render_template("view.html", book=book)
 
-
 # [START add]
-@crud.route('/add', methods=['GET', 'POST'])
+@crud.route('/add')
 def add():
-    if request.method == 'POST':
-        data = request.form.to_dict(flat=True)
-        print(data)
-        book = get_model().create(data)
-
-        return redirect(url_for('.view', id=book['id']))
-
-    return render_template("form.html", action="Add", book={})
+    return render_template("form.html")
 # [END add]
 
+# [START add_diy]
+@crud.route('/add/diy', methods=['GET', 'POST'])
+def add_diy():
+    if request.method == 'POST':
+        data = request.form.to_dict(flat=True)
+        book = get_model().create(data)
+        return redirect(url_for('.view', id=book['id']))
+    return render_template("form_diy.html", action="Add", book={})
+# [END add_diy]
+
+# [START add_imdb]
+@crud.route('/add/imdb', methods=['GET', 'POST'])
+def add_imdb():
+    if request.method == 'POST':
+        url_link = request.form.get('imdb')
+        data = crawl_data(url_link)
+        book = get_model().create(data)
+        return redirect(url_for('.view', id=book['id']))
+    return render_template("form_imdb.html", action="Add", book={})
+# [END add_diy]
 
 @crud.route('/<id>/edit', methods=['GET', 'POST'])
 def edit(id):
@@ -92,7 +102,7 @@ def edit(id):
         data = request.form.to_dict(flat=True)
         book = get_model().update(data, id)
         return redirect(url_for('.view', id=book['id']))
-    return render_template("form.html", action="Edit", book=book)
+    return render_template("form_diy.html", action="Edit", book=book)
 
 
 @crud.route('/<id>/delete')
@@ -131,11 +141,11 @@ def search_results(search):
     if select_string == 'title':
         qry = get_model().Book.query.filter(get_model().Book.title.like('%'+search_string+'%'))
         results = qry.all()
-    elif select_string == 'publishedDate':
-        qry = get_model().Book.query.filter(get_model().Book.publishedDate.like('%'+search_string+'%'))
+    elif select_string == 'releasedDate':
+        qry = get_model().Book.query.filter(get_model().Book.releasedDate.like('%'+search_string+'%'))
         results = qry.all()
-    elif select_string == 'author':
-        qry = get_model().Book.query.filter(get_model().Book.author.like('%'+search_string+'%'))
+    elif select_string == 'director':
+        qry = get_model().Book.query.filter(get_model().Book.director.like('%'+search_string+'%'))
         results = qry.all()
     else:
         flash('Something is definitely wrong...')

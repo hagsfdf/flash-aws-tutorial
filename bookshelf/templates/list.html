@@ -18,7 +18,7 @@
 
 {% block content %}
 
-<h3>Books</h3>
+<h3>Movies</h3>
 <a href="/books/add" class="btn btn-success btn-sm">
   <i class="glyphicon glyphicon-plus"></i>
   Add book
@@ -28,18 +28,43 @@
     Delete ALL (deprecated)
 </a>
 
+<div style="padding:30px;text-align:left;">
+  {% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <ul class=flashes>
+    {% for message in messages %}
+    <li>{{ message }}</li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+  {% endwith %}
+  {% from "_formhelpers.html" import render_field %}
+  <form method=post>
+  <dl>
+    {{ render_field(form.select) }}
+  </dl>
+  <p><input type="submit" value=Sort>
+  </form>
+</div>
+
+
+
 
 {% for book in books %}
 <div class="media">
   <a href="/books/{{book.id}}">
     <div class="media-left">
+      {% if book.imageUrl %}
+      <img src={{book.imageUrl}}>
+      {% else %}
       <img src="http://placekitten.com/g/128/192">
+      {% endif %}
     </div>
     <div class="media-body">
       <h4>{{book.title}}</h4>
-      <p>{{book.author}}</p>
+      <p>{{book.director}}</p>
       {% if book.rating %}
-      <i>Your rating for this book: {{book.rating}} </i>
+      <i>Your rating for this movie: {{book.rating}} </i>
       {% endif %}
     </div>
   </a>

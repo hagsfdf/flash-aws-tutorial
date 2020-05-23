@@ -14,7 +14,7 @@
 
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-
+import time
 
 builtin_list = list
 
@@ -42,36 +42,52 @@ class Book(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(255))
-    author = db.Column(db.String(255))
-    publishedDate = db.Column(db.String(255))
+    director = db.Column(db.String(255))
+    releasedDate = db.Column(db.String(255))
     imageUrl = db.Column(db.String(255))
     description = db.Column(db.String(4096))
-    createdBy = db.Column(db.String(255))
-    createdById = db.Column(db.String(255))
+    addedDate = db.Column(db.Integer)
     rating = db.Column(db.Float, nullable = True)
 
     def __repr__(self):
-        return "<Book(title='%s', author=%s, rating=%d)" % (self.title, self.author, self.rating)
+        return "<Book(title='%s', director=%s, rating=%d)" % (self.title, self.director, self.rating)
 # [END model]
 
-# class Rating(db.Model):
-#     __tablename__ = 'ratings'
-#     rating_id = db.Column(db.Integer,primary_key = True)
-#     book_id = db.Column(db.Integer, db.ForeignKey('books.id'))
-#     rate = db.Column(db.Integer)
-
-#     book = db.relationship("Book",backref=db.backref("ratings"), order_by=rating_id)
-
-#     def __repr__(self):
-#         return "<Rating of book %s by you is %s>" % (self.book_id, self.score)
 
 # [START list]
-def list(limit=10, cursor=None):
+def list(limit=10, cursor=None, sortKey="title"):
     cursor = int(cursor) if cursor else 0
-    query = (Book.query
-             .order_by(Book.title)
-             .limit(limit)
-             .offset(cursor))
+    query = None
+    if sortKey == 'title':
+        query = (Book.query
+                .order_by(Book.title)
+                .limit(limit)
+                .offset(cursor))
+    elif sortKey == 'releasedDate-ASC':
+        query = (Book.query
+                .order_by(Book.releasedDate)
+                .limit(limit)
+                .offset(cursor))
+    elif sortKey == 'releasedDate-DESC':
+        query = (Book.query
+                .order_by(Book.releasedDate.desc())
+                .limit(limit)
+                .offset(cursor))
+    elif sortKey == 'addedDate-ASC':
+        query = (Book.query
+                .order_by(Book.addedDate)
+                .limit(limit)
+                .offset(cursor))
+    elif sortKey == 'addedDate-DESC':
+        query = (Book.query
+                .order_by(Book.addedDate.desc())
+                .limit(limit)
+                .offset(cursor))
+    else:
+        query = (Book.query
+                .order_by(Book.title)
+                .limit(limit)
+                .offset(cursor))
     books = builtin_list(map(from_sql, query.all()))
     next_page = cursor + limit if len(books) == limit else None
     return (books, next_page)
@@ -89,6 +105,8 @@ def read(id):
 
 # [START create]
 def create(data):
+    data['addedDate'] = int(time.time())
+    # print(data['addedDate'])
     book = Book(**data)
     db.session.add(book)
     db.session.commit()
@@ -99,6 +117,7 @@ def create(data):
 # [START update]
 def update(data, id):
     book = Book.query.get(id)
+    data['addedDate'] = int(time.time())
     for k, v in data.items():
         setattr(book, k, v)
     db.session.commit()
@@ -114,29 +133,6 @@ def delete_all():
     Book.query.delete()
     db.session.commit()
 
-# def create_rate(data):
-#     rate = Rating(**data)
-#     db.session.add(rate)
-#     db.session.commit()
-#     return from_sql(rate)
-
-# def update_rate(data,id):
-#     rate = Rating.query.get(id)
-#     for k, v in rate.items():
-#         setattr(rate, k, v)
-#     db.session.commit()
-#     return from_sql(rate)
-
-# def read_rate(id):
-#     result = Rating.query.get(id)
-#     if not result:
-#         return None
-#     return from_sql(result)
-
-# def delete_rate(id):
-#     Rating.query.filter_by(id=id).delete()
-#     db.session.commit()
-
 def _create_database():
     """
     If this script is run directly, create all the tables necessary to run the
@@ -146,6 +142,8 @@ def _create_database():
     application.config.from_pyfile('../config.py')
     init_app(application)
     with application.app_context():
+        # Hella dangerous
+        # db.drop_all()
         db.create_all()
     print("All tables created")
 
