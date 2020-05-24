@@ -1,4 +1,5 @@
 import urllib.request
+from urllib.parse import urlparse
 from bs4 import BeautifulSoup
 
 import hashlib
@@ -20,12 +21,26 @@ def clean_text(text):
     text = text.strip(' ')
     return text
 
+def valid_imdb_url(txt):
+    x = urlparse(txt)
+    if x.netloc != 'www.imdb.com':
+        return False
+    path = x.path.split('/')
+    if path[1] != 'title':
+        return False
+    if not path[2].startswith('tt'):
+        return False
+    return True
+
 def crawl_data(url):
     attributes = ['title', 'director', 'releasedDate', 'description', 'imageUrl']
     ret = {row:None for row in attributes}
 
+    try:
+        page = urllib.request.urlopen(url)
+    except urllib.error.HTTPError as e:
+        return e.code
 
-    page = urllib.request.urlopen(url)
     soup = BeautifulSoup(page, "lxml")
 
     right_table = soup.find('div', class_='poster')

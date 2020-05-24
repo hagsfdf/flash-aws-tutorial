@@ -22,9 +22,16 @@
     
     <form method="POST" enctype="multipart/form-data">
     
+      {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        {% for message in messages %}
+          <div class="alert-danger" style="text-emphasis-color: red; padding: 40px; text-align: center;"><b>{{ message }}</b></div>
+        {% endfor %}
+      {% endif %}
+      {% endwith %}
 
-      <div class="bg-info text-white">
-        <b>Please follow these rules below when pasting IMDB url</b>
+      <div class="bg-info text-white" style="padding: 20px; line-height: 150%;">
+        <p><b>Please follow these rules below when pasting IMDB url</b></p>
         <ol>1. Start with "http://" or "https://"</ol>
         <ol>2. The next following part should be "www.imdb.com"</ol>
         <ol>3. The next following part should be "/title/" + (valid imdb movie id, which starts with "tt")</ol>

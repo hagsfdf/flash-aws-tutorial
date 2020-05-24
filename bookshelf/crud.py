@@ -15,7 +15,7 @@
 from bookshelf import get_model
 from flask import Blueprint, redirect, render_template, request, url_for, flash
 from bookshelf.forms import BookSearchForm, BookSortingForm
-from bookshelf.upload import crawl_data
+from bookshelf.upload import crawl_data, valid_imdb_url
 crud = Blueprint('crud', __name__)
 
 # [START list]
@@ -88,7 +88,14 @@ def add_diy():
 def add_imdb():
     if request.method == 'POST':
         url_link = request.form.get('imdb')
+        if not valid_imdb_url(url_link):
+            flash("Sorry, not a valid link")
+            return render_template("form_imdb.html", action="Add", book={})
         data = crawl_data(url_link)
+        # Indicates HTTP error
+        if isinstance(data, int):
+            flash('Sorry, not a valid link')
+            return render_template("form_imdb.html", action="Add", book={})
         book = get_model().create(data)
         return redirect(url_for('.view', id=book['id']))
     return render_template("form_imdb.html", action="Add", book={})
