@@ -8,3 +8,6 @@ __pycache__/
 # Credential file
 accessKeys.csv
 .DS_Store
+# ipynb file
+.ipynb_checkpoints/
+
