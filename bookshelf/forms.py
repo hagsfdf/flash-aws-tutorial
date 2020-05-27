@@ -10,8 +10,8 @@ class BookSearchForm(Form):
 
 class BookSortingForm(Form):
     choices = [('title', 'Title'),
-               ('releasedDate-DESC', 'Year (newest to oldest)'),
-               ('releasedDate-ASC','Year (oldest to newest)'),
-               ('addedDate-DESC', 'Added Date (most recent to oldest)'),
-               ('addedDate-ASC', 'Added Date (oldest to most recent)')]
+               ('releasedDate', 'Year'),
+               ('addedDate', 'Added Date')]
+    choices_order = [('DESC', 'descending order'), ('ASC', 'ascending order')]
     select = SelectField('Sort movies by :', choices=choices)
+    select_choice = SelectField('', choices = choices_order)

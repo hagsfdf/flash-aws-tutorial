@@ -55,34 +55,46 @@ class Book(db.Model):
 
 
 # [START list]
-def list(limit=10, cursor=None, sortKey="title"):
+def list(limit=10, cursor=None, sortKey="title", order = "ASC"):
     cursor = int(cursor) if cursor else 0
     query = None
+    if sortKey not in ["title", "releasedDate", "addedDate"]:
+        assert(0)
+    if order not in ["ASC", "DESC"]:
+        assert(0)
     if sortKey == 'title':
-        query = (Book.query
-                .order_by(Book.title)
+        if order == 'DESC':
+            query = (Book.query
+                .order_by(Book.title.desc())
                 .limit(limit)
                 .offset(cursor))
-    elif sortKey == 'releasedDate-ASC':
-        query = (Book.query
-                .order_by(Book.releasedDate)
-                .limit(limit)
-                .offset(cursor))
-    elif sortKey == 'releasedDate-DESC':
-        query = (Book.query
-                .order_by(Book.releasedDate.desc())
-                .limit(limit)
-                .offset(cursor))
-    elif sortKey == 'addedDate-ASC':
-        query = (Book.query
-                .order_by(Book.addedDate)
-                .limit(limit)
-                .offset(cursor))
-    elif sortKey == 'addedDate-DESC':
-        query = (Book.query
-                .order_by(Book.addedDate.desc())
-                .limit(limit)
-                .offset(cursor))
+        else:
+            query = (Book.query
+                    .order_by(Book.title)
+                    .limit(limit)
+                    .offset(cursor))
+    elif sortKey == 'releasedDate':
+        if order == 'DESC':
+            query = (Book.query
+                    .order_by(Book.releasedDate.desc())
+                    .limit(limit)
+                    .offset(cursor))
+        else:     
+            query = (Book.query
+                    .order_by(Book.releasedDate)
+                    .limit(limit)
+                    .offset(cursor))
+    elif sortKey == 'addedDate':
+        if order == 'DESC':
+            query = (Book.query
+                    .order_by(Book.addedDate.desc())
+                    .limit(limit)
+                    .offset(cursor))
+        else:
+            query = (Book.query
+                    .order_by(Book.addedDate.desc())
+                    .limit(limit)
+                    .offset(cursor))
     else:
         query = (Book.query
                 .order_by(Book.title)

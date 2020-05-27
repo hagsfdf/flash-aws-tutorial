@@ -27,8 +27,9 @@ def list():
 
     sort = BookSortingForm(request.form)
     select_string = sort.data['select']
+    select_choice = sort.data['select_choice']
     if request.method == 'POST':
-        books, next_page_token = get_model().list(cursor=token,sortKey=select_string)
+        books, next_page_token = get_model().list(cursor=token,sortKey=select_string,order=select_choice)
         return render_template("list.html", books=books, next_page_token=next_page_token, form=sort)
     books, next_page_token = get_model().list(cursor=token)
     return render_template("list.html", books=books, next_page_token=next_page_token, form=sort)
