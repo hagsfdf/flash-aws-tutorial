@@ -6,10 +6,10 @@ But I wanted to deploy this project in AWS environment using Elastic Beanstalk, 
 
 ## TODO
 
-- Find a better thumbnail? (numerous cat pics are driving me crazy)
+- [X] Find a better thumbnail? (numerous cat pics are driving me crazy)
     - google image scraping?
     - where to store thumbnail images? S3?
-- Book recommendation based on description?
+- [] Book recommendation based on description?
     - Should study [text_similarity](https://medium.com/@adriensieg/text-similarities-da019229c894)
     - Since there is no plan for implementing multiple users, user-user collaborative filtering strategy is not a good fit.
 
@@ -52,4 +52,5 @@ So I just added 302 to the success codes in configuration of *target groups*, si
 ## References
 
 - [Flask+AWS](https://medium.com/@rodkey/deploying-a-flask-application-on-aws-a72daba6bb80)
-- []
+- [docAWS](https://docs.aws.amazon.com/index.html)
+- [GCP-bookshelf](https://cloud.google.com/python/getting-started)
