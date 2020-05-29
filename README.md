@@ -9,7 +9,7 @@ But I wanted to deploy this project in AWS environment using Elastic Beanstalk, 
 - [X] Find a better thumbnail? (numerous cat pics are driving me crazy)
     - google image scraping?
     - where to store thumbnail images? S3?
-- [] Book recommendation based on description?
+- [ ] Book recommendation based on description?
     - Should study [text_similarity](https://medium.com/@adriensieg/text-similarities-da019229c894)
     - Since there is no plan for implementing multiple users, user-user collaborative filtering strategy is not a good fit.
 
