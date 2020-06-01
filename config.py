@@ -38,7 +38,7 @@ PROJECT_ID = 'ee488g-20160258'
 # Replace the following values the respective values of your Cloud SQL
 # instance.
 CLOUDSQL_USER = 'hagsfdf'
-CLOUDSQL_PASSWORD = 'hyhy1023'
+CLOUDSQL_PASSWORD = 'qpwoeiru'
 CLOUDSQL_DATABASE = 'flaskdb'
 AWS_ENDPOINT = 'flaskdb.cs4ggh6niwtb.ap-northeast-2.rds.amazonaws.com'
 # Set this value to the Cloud SQL connection name, e.g.
